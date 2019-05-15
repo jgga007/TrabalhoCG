@@ -79,6 +79,7 @@ public class Main extends SimpleApplication {
         matParedeFinal.setTexture("ColorMap", assetManager.loadTexture("Textures/Parede.jpg"));
         cenario.attachChild(geomParedeFinal);
         
+        int i;
         
         rootNode.attachChild(cenario);
     }
