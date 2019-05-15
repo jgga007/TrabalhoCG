@@ -19,6 +19,7 @@ public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
         Main app = new Main();
+        app.showSettings=false;
         app.start();
     }
     
@@ -37,8 +38,9 @@ public class Main extends SimpleApplication {
         Box chao = new Box(1, 0.05f, 10);
         Geometry geomChao = new Geometry("Chao", chao);
         Material matChao = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        matChao.setColor("Color", ColorRGBA.Blue);
+        //matChao.setColor("Color", ColorRGBA.Blue);
         geomChao.setMaterial(matChao);
+        matChao.setTexture("ColorMap", assetManager.loadTexture("Textures/Chao.jpg"));
         cenario.attachChild(geomChao);
         
         Box paredeEsq = new Box(0.05f, 0.6f, 10);
@@ -47,6 +49,7 @@ public class Main extends SimpleApplication {
         matParede.setColor("Color", ColorRGBA.Red);
         geomParedeEsq.setMaterial(matParede);
         geomParedeEsq.setLocalTranslation(-1, 0.6f,0);
+        matParede.setTexture("ColorMap", assetManager.loadTexture("Textures/Parede.jpg"));
         cenario.attachChild(geomParedeEsq);
         
         Box paredeDir = new Box(0.05f, 0.6f, 10);
@@ -61,9 +64,11 @@ public class Main extends SimpleApplication {
         matTeto.setColor("Color", ColorRGBA.Orange);
         geomTeto.setMaterial(matTeto);
         geomTeto.setLocalTranslation(0, 1.2f,0);
+        matTeto.setTexture("ColorMap", assetManager.loadTexture("Textures/Parede.jpg"));
         cenario.attachChild(geomTeto);
         
-        int i =0;
+    
+        
         
         Box paredeFinal = new Box(1, 0.6f, 0.1f);
         Geometry geomParedeFinal = new Geometry("ParedeFinal", paredeFinal);
@@ -71,8 +76,8 @@ public class Main extends SimpleApplication {
         matParedeFinal.setColor("Color", ColorRGBA.Magenta);
         geomParedeFinal.setMaterial(matParedeFinal);
         geomParedeFinal.setLocalTranslation(0,0.6f,-10);
+        matParedeFinal.setTexture("ColorMap", assetManager.loadTexture("Textures/Parede.jpg"));
         cenario.attachChild(geomParedeFinal);
-
         
         
         rootNode.attachChild(cenario);
