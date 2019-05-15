@@ -63,6 +63,7 @@ public class Main extends SimpleApplication {
         geomTeto.setLocalTranslation(0, 1.2f,0);
         cenario.attachChild(geomTeto);
         
+        int i =0;
         
         Box paredeFinal = new Box(1, 0.6f, 0.1f);
         Geometry geomParedeFinal = new Geometry("ParedeFinal", paredeFinal);
@@ -71,6 +72,7 @@ public class Main extends SimpleApplication {
         geomParedeFinal.setMaterial(matParedeFinal);
         geomParedeFinal.setLocalTranslation(0,0.6f,-10);
         cenario.attachChild(geomParedeFinal);
+
         
         
         rootNode.attachChild(cenario);
