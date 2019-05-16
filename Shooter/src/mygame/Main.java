@@ -1,8 +1,16 @@
 package mygame;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.collision.CollisionResult;
+import com.jme3.collision.CollisionResults;
+import com.jme3.font.BitmapText;
+import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Ray;
 import com.jme3.math.Transform;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -30,10 +38,14 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        
+        initCrossHairs();
+        //initKeys();
+        //initMark(); 
        
         cam.setLocation(new Vector3f(0,0.8f,10));
         //flyCam.setEnabled(false);//trava movimentação da camera com o mouse
-        
+                
         cenario = new Node("Cenario");
         Box chao = new Box(1, 0.05f, 10);
         Geometry geomChao = new Geometry("Chao", chao);
@@ -66,10 +78,7 @@ public class Main extends SimpleApplication {
         geomTeto.setLocalTranslation(0, 1.2f,0);
         matTeto.setTexture("ColorMap", assetManager.loadTexture("Textures/Parede.jpg"));
         cenario.attachChild(geomTeto);
-        
-    
-        
-        
+       
         Box paredeFinal = new Box(1, 0.6f, 0.1f);
         Geometry geomParedeFinal = new Geometry("ParedeFinal", paredeFinal);
         Material matParedeFinal = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -78,9 +87,7 @@ public class Main extends SimpleApplication {
         geomParedeFinal.setLocalTranslation(0,0.6f,-10);
         matParedeFinal.setTexture("ColorMap", assetManager.loadTexture("Textures/Parede.jpg"));
         cenario.attachChild(geomParedeFinal);
-        
-        int i;
-        
+    
         rootNode.attachChild(cenario);
     }
 
@@ -93,4 +100,19 @@ public class Main extends SimpleApplication {
     public void simpleRender(RenderManager rm) {
         //TODO: add render code
     }
+    
+    /** A centred plus sign to help the player aim. */
+  protected void initCrossHairs() {
+    setDisplayStatView(false);
+    guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+    BitmapText ch = new BitmapText(guiFont, false);
+    ch.setSize(guiFont.getCharSet().getRenderedSize() * 2);
+    ch.setText("+"); // crosshairs
+    ch.setColor(ColorRGBA.Green);
+    ch.setLocalTranslation( // center
+      settings.getWidth() / 2 - ch.getLineWidth()/2,
+      settings.getHeight() / 2 + ch.getLineHeight()/2, 0);
+    guiNode.attachChild(ch);
+  } 
+  
 }
