@@ -27,11 +27,13 @@ public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
         Main app = new Main();
-        app.showSettings=false;
+        //app.showSettings=false;
         app.start();
     }
     
     private Node cenario;
+    private Node obstaculos;
+    private Node deaphObst;
 
     public Main() {
     }
@@ -43,11 +45,12 @@ public class Main extends SimpleApplication {
         //initKeys();
         //initMark(); 
        
-        cam.setLocation(new Vector3f(0,0.8f,10));
+        cam.setLocation(new Vector3f(0,0.8f,100));
         //flyCam.setEnabled(false);//trava movimentação da camera com o mouse
-                
+        obstaculos = new Node("obstaculos");
         cenario = new Node("Cenario");
-        Box chao = new Box(1, 0.05f, 10);
+        deaphObst = new Node("deaphObst");
+        Box chao = new Box(2, 0.05f, 100);
         Geometry geomChao = new Geometry("Chao", chao);
         Material matChao = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         //matChao.setColor("Color", ColorRGBA.Blue);
@@ -55,40 +58,83 @@ public class Main extends SimpleApplication {
         matChao.setTexture("ColorMap", assetManager.loadTexture("Textures/Chao.jpg"));
         cenario.attachChild(geomChao);
         
-        Box paredeEsq = new Box(0.05f, 0.6f, 10);
+        Box paredeEsq = new Box(0.05f, 1.2f, 100);
         Geometry geomParedeEsq = new Geometry("ParedeEsq", paredeEsq);
         Material matParede = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         matParede.setColor("Color", ColorRGBA.Red);
         geomParedeEsq.setMaterial(matParede);
-        geomParedeEsq.setLocalTranslation(-1, 0.6f,0);
+        geomParedeEsq.setLocalTranslation(-2, 1.2f,0);
         matParede.setTexture("ColorMap", assetManager.loadTexture("Textures/Parede.jpg"));
         cenario.attachChild(geomParedeEsq);
         
-        Box paredeDir = new Box(0.05f, 0.6f, 10);
+        Box paredeDir = new Box(0.05f, 1.2f, 100);
         Geometry geomParedeDir = new Geometry("ParedeEsq", paredeDir);
         geomParedeDir.setMaterial(matParede);
-        geomParedeDir.setLocalTranslation(1, 0.6f,0);
+        geomParedeDir.setLocalTranslation(2, 1.2f,0);
         cenario.attachChild(geomParedeDir);
         
-        Box teto = new Box(1, 0.05f, 10);
+        Box teto = new Box(2, 0.05f, 100);
         Geometry geomTeto = new Geometry("Teto", teto);
         Material matTeto = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         matTeto.setColor("Color", ColorRGBA.Orange);
         geomTeto.setMaterial(matTeto);
-        geomTeto.setLocalTranslation(0, 1.2f,0);
+        geomTeto.setLocalTranslation(0,2.2f,0);
         matTeto.setTexture("ColorMap", assetManager.loadTexture("Textures/Parede.jpg"));
         cenario.attachChild(geomTeto);
        
-        Box paredeFinal = new Box(1, 0.6f, 0.1f);
+        Box paredeFinal = new Box(2, 1.2f, 0.1f);
         Geometry geomParedeFinal = new Geometry("ParedeFinal", paredeFinal);
         Material matParedeFinal = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         matParedeFinal.setColor("Color", ColorRGBA.Magenta);
         geomParedeFinal.setMaterial(matParedeFinal);
-        geomParedeFinal.setLocalTranslation(0,0.6f,-10);
+        geomParedeFinal.setLocalTranslation(0,1.2f,-100);
         matParedeFinal.setTexture("ColorMap", assetManager.loadTexture("Textures/Parede.jpg"));
         cenario.attachChild(geomParedeFinal);
-    
         rootNode.attachChild(cenario);
+        criaObstaculo();
+        rootNode.attachChild(obstaculos);
+                
+    }
+
+    public void criaObstaculo(){
+        
+        Box obst = new Box(0.4f, 0.4f, 0.4f);
+        Geometry geomObst;
+        Material caixa = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        caixa.setTexture("ColorMap", assetManager.loadTexture("Textures/box.jpg"));
+        
+        //material da lava
+        Box dObst = new Box(0.4f, 0.01f, 0.4f);
+        Geometry geomDObst;
+        Material lava = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        lava.setTexture("ColorMap", assetManager.loadTexture("Textures/lava.jpg"));
+        
+            
+        //parede esquerda inferior
+        for(int i=0;i<100;i+=15){
+            geomObst = new Geometry("obst"+i, obst);
+            geomObst.setMaterial(caixa);
+            geomObst.setLocalTranslation(-1.45f,0.45f,i);
+            obstaculos.attachChild(geomObst);
+        }
+        
+        //sobre a caixa inf da parede esq
+        for(int i=0;i<100;i+=30){
+            geomObst = new Geometry("obst"+i+1, obst);
+            geomObst.setMaterial(caixa);
+            geomObst.setLocalTranslation(-1.45f,1.2f,i);
+            obstaculos.attachChild(geomObst);
+        }
+        
+        //lava lado esquerdo 
+        for(int i=0;i<100;i+=15){
+            geomDObst = new Geometry("Dobst"+i, dObst);
+            geomDObst.setMaterial(lava);
+            geomDObst.setLocalTranslation(-0.5f,0.1f,i);
+            obstaculos.attachChild(geomDObst);
+        }
+        
+        
     }
 
     @Override
@@ -113,6 +159,5 @@ public class Main extends SimpleApplication {
       settings.getWidth() / 2 - ch.getLineWidth()/2,
       settings.getHeight() / 2 + ch.getLineHeight()/2, 0);
     guiNode.attachChild(ch);
-  } 
-  
+  }  
 }
