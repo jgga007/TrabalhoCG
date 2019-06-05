@@ -1,6 +1,8 @@
 package mygame;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.audio.AudioData.DataType;
+import com.jme3.audio.AudioNode;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.font.BitmapText;
@@ -19,6 +21,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
+
 
 /**
  * This is the Main Class of your Game. You should only do initialization here.
@@ -40,9 +43,13 @@ public class Main extends SimpleApplication {
     private Node shootables;
     private Geometry mark;
     private Node portaNode;
+    private AudioNode audio_gun;
+    private AudioNode audio_nature;
 
     public Main() {
     }
+   
+    
 
     @Override
     public void simpleInitApp() {
@@ -50,6 +57,7 @@ public class Main extends SimpleApplication {
         initCrossHairs();
         initKeys();
         initMark();
+        initAudio();
 
         cam.setLocation(new Vector3f(0, 0.8f, 100));
         //flyCam.setEnabled(false);//trava movimentação da camera com o mouse
@@ -65,7 +73,7 @@ public class Main extends SimpleApplication {
         matParedeFinal.setColor("Color", ColorRGBA.Magenta);
         geomParedeFinal.setMaterial(matParedeFinal);
         geomParedeFinal.setLocalTranslation(0, 1.2f, -100);
-        matParedeFinal.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
+        //matParedeFinal.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
         cenario.attachChild(geomParedeFinal);
 
         Box teste = new Box(1, 06f, 1);
@@ -88,7 +96,7 @@ public class Main extends SimpleApplication {
         Box obst = new Box(0.4f, 0.4f, 0.4f);
         Geometry geomObst;
         Material caixa = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        caixa.setTexture("ColorMap", assetManager.loadTexture("Textures/box.jpg"));
+        //caixa.setTexture("ColorMap", assetManager.loadTexture("Textures/box.jpg"));
 
         //material da lava
         Box dObst = new Box(0.4f, 0.01f, 0.4f);
@@ -189,7 +197,7 @@ public class Main extends SimpleApplication {
         Box parede = new Box(0.05f, 1.2f, 10);
         Geometry geomParedeEsq, geomParedeDir;
         Material matParede = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        matParede.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
+        //matParede.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
 
         Box teto = new Box(2, 0.05f, 10);
         Geometry geomTeto;
@@ -228,7 +236,7 @@ public class Main extends SimpleApplication {
         Box Porta = new Box(1f, 1f, 0.1f);
         Geometry geomPortaDir1, geomPortaEsq1, geomPortaDir2, geomPortaEsq2;
         Material porta = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        porta.setTexture("ColorMap", assetManager.loadTexture("Textures/porta.jpg"));
+        //porta.setTexture("ColorMap", assetManager.loadTexture("Textures/porta.jpg"));
 
         geomPortaDir1 = new Geometry("Porta", Porta);
         geomPortaDir1.setMaterial(porta);
@@ -314,6 +322,7 @@ public class Main extends SimpleApplication {
             //}
 
             if (name.equals("Shoot") && !keyPressed) {
+                audio_gun.playInstance();
                 // 1. Reset results list.
                 CollisionResults results = new CollisionResults();
                 // 2. Aim the ray from cam loc to cam direction.
@@ -375,4 +384,22 @@ public class Main extends SimpleApplication {
                 settings.getHeight() / 2 + ch.getLineHeight() / 2, 0);
         guiNode.attachChild(ch);
     }
+    
+    private void initAudio() {
+    /* gun shot sound is to be triggered by a mouse click. */
+    audio_gun = new AudioNode(assetManager, "Sounds/Gun.wav", DataType.Buffer);
+    audio_gun.setPositional(false);
+    audio_gun.setLooping(false);
+    audio_gun.setVolume(2);
+    rootNode.attachChild(audio_gun);
+    
+    /* nature sound - keeps playing in a loop.*/
+    audio_nature = new AudioNode(assetManager, "Sounds/Background2.ogg", DataType.Stream);
+    audio_nature.setLooping(true);  // activate continuous playing
+    audio_nature.setPositional(true);
+    audio_nature.setVolume(3);
+    rootNode.attachChild(audio_nature);
+    audio_nature.play(); // play continuously!
+  }
+
 }
