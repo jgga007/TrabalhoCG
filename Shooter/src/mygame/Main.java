@@ -73,7 +73,7 @@ public class Main extends SimpleApplication {
         matParedeFinal.setColor("Color", ColorRGBA.Magenta);
         geomParedeFinal.setMaterial(matParedeFinal);
         geomParedeFinal.setLocalTranslation(0, 1.2f, -100);
-        //matParedeFinal.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
+        matParedeFinal.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
         cenario.attachChild(geomParedeFinal);
 
         Box teste = new Box(1, 06f, 1);
@@ -82,7 +82,7 @@ public class Main extends SimpleApplication {
         matteste.setColor("Color", ColorRGBA.Red);
         geomteste.setMaterial(matteste);
         geomteste.setLocalTranslation(0, 06f, 0);
-        //matteste.setTexture("ColorMap", assetManager.loadTexture("Textures/Parede.jpg"));
+        matteste.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
         shootables.attachChild(geomteste);
 
         rootNode.attachChild(cenario);
@@ -96,7 +96,7 @@ public class Main extends SimpleApplication {
         Box obst = new Box(0.4f, 0.4f, 0.4f);
         Geometry geomObst;
         Material caixa = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        //caixa.setTexture("ColorMap", assetManager.loadTexture("Textures/box.jpg"));
+        caixa.setTexture("ColorMap", assetManager.loadTexture("Textures/box.jpg"));
 
         //material da lava
         Box dObst = new Box(0.4f, 0.01f, 0.4f);
@@ -197,7 +197,7 @@ public class Main extends SimpleApplication {
         Box parede = new Box(0.05f, 1.2f, 10);
         Geometry geomParedeEsq, geomParedeDir;
         Material matParede = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        //matParede.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
+        matParede.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
 
         Box teto = new Box(2, 0.05f, 10);
         Geometry geomTeto;
@@ -236,7 +236,7 @@ public class Main extends SimpleApplication {
         Box Porta = new Box(1f, 1f, 0.1f);
         Geometry geomPortaDir1, geomPortaEsq1, geomPortaDir2, geomPortaEsq2;
         Material porta = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        //porta.setTexture("ColorMap", assetManager.loadTexture("Textures/porta.jpg"));
+        porta.setTexture("ColorMap", assetManager.loadTexture("Textures/porta.jpg"));
 
         geomPortaDir1 = new Geometry("Porta", Porta);
         geomPortaDir1.setMaterial(porta);
