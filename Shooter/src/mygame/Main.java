@@ -56,6 +56,7 @@ public class Main extends SimpleApplication {
     private long time = System.currentTimeMillis();
     public int cont = 0, cont2 = 0;
     public BitmapText Texto, Texto2, Texto3, Texto4, ch;
+    public Geometry geomPortaDir1, geomPortaEsq1, geomPortaDir2, geomPortaEsq2, geomPortaDir3, geomPortaEsq3;
 
     
     public Main() {
@@ -254,7 +255,6 @@ public class Main extends SimpleApplication {
     public void criaPorta(float posZ) {
 
         Box Porta = new Box(1f, 1f, 0.1f);
-        Geometry geomPortaDir1, geomPortaEsq1, geomPortaDir2, geomPortaEsq2, geomPortaDir3, geomPortaEsq3;
         Material porta = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         porta.setTexture("ColorMap", assetManager.loadTexture("Textures/porta.jpg"));
 
@@ -379,13 +379,14 @@ public class Main extends SimpleApplication {
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
             if (name.equals("Begin") && !keyPressed) {
-                Texto.removeFromParent();
-                Texto2.removeFromParent();
+                guiNode.attachChild(Texto2);
+                //guiNode.detachChild(Texto3);
                 Texto3.removeFromParent();
-                Texto4.removeFromParent();
+               //Texto4.removeFromParent();
                 cont = 0;
                 cont2 = 0;
-                
+                ResetaPorta();
+                cam.setLocation(new Vector3f(0, 0.8f, 100));
             }
             
             if (name.equals("Walk") && !keyPressed) {
@@ -610,27 +611,14 @@ public class Main extends SimpleApplication {
     public void ResetaPorta()
     {
         
-        if (cam.getLocation().z >= 95 && cam.getLocation().z <= 96) {
-            for (float i = 1; i < 2; i += 0.01) {
-                portaNode.getChild("Porta").setLocalTranslation((float) i, 1, 93);
-                portaNode.getChild("Porta2").setLocalTranslation((float) i * -1, 1, 93);
-            }
-        }
-        
-        if (cam.getLocation().z >= 75 && cam.getLocation().z <= 76) {
-            for (float i = 1; i < 2; i += 0.01) {
-                portaNode.getChild("Porta3").setLocalTranslation((float) i, 1, 73);
-                portaNode.getChild("Porta4").setLocalTranslation((float) i * -1, 1, 73);
-            }
-        }
-        
-        if (cam.getLocation().z >= 0 && cam.getLocation().z <= 1){
-            for (float i = 1; i < 2; i += 0.01) {
-                portaNode.getChild("Porta5").setLocalTranslation((float) i, 1, -5);
-                portaNode.getChild("Porta6").setLocalTranslation((float) i * -1, 1, -5);
-            }
-        }
-        
+        geomPortaDir1.setLocalTranslation(1f, 1f, 93f);
+        geomPortaEsq1.setLocalTranslation(-1f, 1, 93f);
+
+        geomPortaDir2.setLocalTranslation(1f, 1, 93f-20);
+        geomPortaEsq2.setLocalTranslation(-1f, 1, 93f-20);
+
+        geomPortaDir3.setLocalTranslation(1f, 1, 93f-100);
+        geomPortaEsq3.setLocalTranslation(-1f, 1, 93f-100);
         
     }
     
