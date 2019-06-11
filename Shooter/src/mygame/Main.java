@@ -55,7 +55,7 @@ public class Main extends SimpleApplication {
     private AudioNode audio_nature;
     private long time = System.currentTimeMillis();
     public int cont = 0, cont2 = 0;
-    public BitmapText Texto;
+    public BitmapText Texto, Texto2, Texto3, Texto4, ch;
 
     
     public Main() {
@@ -68,9 +68,19 @@ public class Main extends SimpleApplication {
         initKeys();
         initMark();
         initAudio();
+        
+        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        Texto2 = new BitmapText(guiFont, false);
+        Texto2.setSize(guiFont.getCharSet().getRenderedSize());  
+        Texto2.setColor(ColorRGBA.White);
+        Texto2.setText("Kills: " + cont2);
+        Texto2.setLocalTranslation( // center
+        settings.getWidth() - 40 - Texto2.getLineWidth() / 2,
+        settings.getHeight() - 10 + Texto2.getLineHeight() / 2, 0);
+        guiNode.attachChild(Texto2);
                 
         cam.setLocation(new Vector3f(0, 0.8f, 100));
-        flyCam.setMoveSpeed(3);
+        flyCam.setMoveSpeed(10);
         //flyCam.setEnabled(false);//trava movimentação da camera com o mouse
         obstaculos = new Node("obstaculos");
         cenario = new Node("Cenario");
@@ -144,10 +154,8 @@ public class Main extends SimpleApplication {
             geomDObst.setMaterial(lava);
             geomDObst.setLocalTranslation(0.6f, 0.1f, i+10);
             obstaculos.attachChild(geomDObst);
-            
-             
-            
         }
+        
         //caixa parede esq inferior
         for (int i = 10; i < 100; i += 15) {
             geomObst = new Geometry("obst" + i, obst);
@@ -305,6 +313,7 @@ public class Main extends SimpleApplication {
                 settings.getWidth() / 2 - Texto.getLineWidth() / 2,
                 settings.getHeight() - 10 + Texto.getLineHeight() / 2, 0);
             guiNode.attachChild(Texto);
+            Verificalava();
         }
         
         //abre a porta com a posição da camera
@@ -327,6 +336,11 @@ public class Main extends SimpleApplication {
                 portaNode.getChild("Porta5").setLocalTranslation((float) i, 1, -5);
                 portaNode.getChild("Porta6").setLocalTranslation((float) i * -1, 1, -5);
             }
+        }
+        
+        if (cam.getLocation().z <= -5f)
+        {
+            EndGame();
         }
        
     }
@@ -364,12 +378,15 @@ public class Main extends SimpleApplication {
 
         @Override
         public void onAction(String name, boolean keyPressed, float tpf) {
-            //if (name.equals("Begin") && !keyPressed) {
-            //i = 0;
-            //Texto.removeFromParent();
-            //Texto2.removeFromParent();
-            //cont = 0;
-            //}
+            if (name.equals("Begin") && !keyPressed) {
+                Texto.removeFromParent();
+                Texto2.removeFromParent();
+                Texto3.removeFromParent();
+                Texto4.removeFromParent();
+                cont = 0;
+                cont2 = 0;
+                
+            }
             
             if (name.equals("Walk") && !keyPressed) {
                 if(cam.getLocation().y<=1)
@@ -480,6 +497,17 @@ public class Main extends SimpleApplication {
                     rootNode.attachChild(mark);
                     closest.getGeometry().removeFromParent();
                     cont2++;
+                    cont = cont - 2;
+                    guiNode.detachChild(Texto2);
+                    guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+                    Texto2 = new BitmapText(guiFont, false);
+                    Texto2.setSize(guiFont.getCharSet().getRenderedSize());  
+                    Texto2.setColor(ColorRGBA.White);
+                    Texto2.setText("Kills: " + cont2);
+                    Texto2.setLocalTranslation( // center
+                    settings.getWidth() -10 - Texto2.getLineWidth() / 2,
+                    settings.getHeight() - 10 + Texto2.getLineHeight() / 2, 0);
+                    guiNode.attachChild(Texto2);
                 } else {
                     // No hits? Then remove the red mark.
                     rootNode.detachChild(mark);
@@ -505,7 +533,7 @@ public class Main extends SimpleApplication {
     protected void initCrossHairs() {
         setDisplayStatView(false);
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
-        BitmapText ch = new BitmapText(guiFont, false);
+        ch = new BitmapText(guiFont, false);
         ch.setSize(guiFont.getCharSet().getRenderedSize() * 2);
         ch.setText("+"); // crosshairs
         ch.setColor(ColorRGBA.Green);
@@ -531,5 +559,82 @@ public class Main extends SimpleApplication {
     rootNode.attachChild(audio_nature);
     audio_nature.play(); // play continuously!
   }
-
+    
+    public void Verificalava() {
+        
+        for (int j = 0; j < 100; j += 15) {
+            if(cam.getLocation()==new Vector3f(-0.6f, cam.getLocation().y, j)) 
+            {
+                cont=cont+10;
+            }        
+        }
+    }
+    
+    public void EndGame() {
+        
+        if(cont <= 60)
+        {
+            guiNode.detachChild(Texto);
+            guiNode.detachChild(Texto2);
+            guiNode.detachChild(ch);
+            
+            guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+            Texto3 = new BitmapText(guiFont, false);
+            Texto3.setSize(guiFont.getCharSet().getRenderedSize());  
+            Texto3.setColor(ColorRGBA.White);
+            Texto3.setText("PARABENS VOCE VENCEU\nAPERTE B PARA RECOMECAR");
+            Texto3.setLocalTranslation( // center
+            settings.getWidth() / 2 - Texto3.getLineWidth() / 2,
+            settings.getHeight() / 2 + Texto3.getLineHeight() / 2, 0);
+            guiNode.attachChild(Texto3);
+        }
+        else
+        {
+            guiNode.detachChild(Texto);
+            guiNode.detachChild(Texto2);
+            guiNode.detachChild(ch);
+            
+            guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+            Texto4 = new BitmapText(guiFont, false);
+            Texto4.setSize(guiFont.getCharSet().getRenderedSize());  
+            Texto4.setColor(ColorRGBA.White);
+            Texto4.setText("VOCE PERDEU!!!!!!\nAPERTE B PARA RECOMECAR");
+            Texto4.setLocalTranslation( // center
+            settings.getWidth() / 2 - Texto4.getLineWidth() / 2,
+            settings.getHeight() / 2 + Texto4.getLineHeight() / 2, 0);
+            guiNode.attachChild(Texto4);
+        }
+        
+    }
+    
+    public void ResetaPorta()
+    {
+        
+        if (cam.getLocation().z >= 95 && cam.getLocation().z <= 96) {
+            for (float i = 1; i < 2; i += 0.01) {
+                portaNode.getChild("Porta").setLocalTranslation((float) i, 1, 93);
+                portaNode.getChild("Porta2").setLocalTranslation((float) i * -1, 1, 93);
+            }
+        }
+        
+        if (cam.getLocation().z >= 75 && cam.getLocation().z <= 76) {
+            for (float i = 1; i < 2; i += 0.01) {
+                portaNode.getChild("Porta3").setLocalTranslation((float) i, 1, 73);
+                portaNode.getChild("Porta4").setLocalTranslation((float) i * -1, 1, 73);
+            }
+        }
+        
+        if (cam.getLocation().z >= 0 && cam.getLocation().z <= 1){
+            for (float i = 1; i < 2; i += 0.01) {
+                portaNode.getChild("Porta5").setLocalTranslation((float) i, 1, -5);
+                portaNode.getChild("Porta6").setLocalTranslation((float) i * -1, 1, -5);
+            }
+        }
+        
+        
+    }
+    
+    
+    
+    
 }
