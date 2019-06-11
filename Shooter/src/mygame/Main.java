@@ -1,8 +1,15 @@
 package mygame;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.asset.plugins.ZipLocator;
 import com.jme3.audio.AudioData.DataType;
 import com.jme3.audio.AudioNode;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.font.BitmapText;
@@ -19,6 +26,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 
@@ -31,12 +39,12 @@ import com.jme3.scene.shape.Sphere;
  */
 public class Main extends SimpleApplication {
 
-    public static void main(String[] args) {
+     public static void main(String[] args) {
         Main app = new Main();
         //app.showSettings=false;
         app.start();
     }
-
+        
     private Node cenario;
     private Node obstaculos;
     private Node deaphObst;
@@ -45,23 +53,24 @@ public class Main extends SimpleApplication {
     private Node portaNode;
     private AudioNode audio_gun;
     private AudioNode audio_nature;
+    private long time = System.currentTimeMillis();
+    public int cont = 0, cont2 = 0;
+    public BitmapText Texto;
 
-    
     
     public Main() {
     }
-   
-    
 
     @Override
     public void simpleInitApp() {
-
+                
         initCrossHairs();
         initKeys();
         initMark();
         initAudio();
-
+                
         cam.setLocation(new Vector3f(0, 0.8f, 100));
+        flyCam.setMoveSpeed(3);
         //flyCam.setEnabled(false);//trava movimentação da camera com o mouse
         obstaculos = new Node("obstaculos");
         cenario = new Node("Cenario");
@@ -72,24 +81,25 @@ public class Main extends SimpleApplication {
         Box paredeFinal = new Box(2, 1.2f, 0.1f);
         Geometry geomParedeFinal = new Geometry("ParedeFinal", paredeFinal);
         Material matParedeFinal = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        matParedeFinal.setColor("Color", ColorRGBA.Magenta);
+        //matParedeFinal.setColor("Color", ColorRGBA.Magenta);
         geomParedeFinal.setMaterial(matParedeFinal);
-        geomParedeFinal.setLocalTranslation(0, 1.2f, -100);
-        matParedeFinal.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
+        geomParedeFinal.setLocalTranslation(0, 1.2f, -10);
+        matParedeFinal.setTexture("ColorMap", assetManager.loadTexture("Textures/Chegada.jpg"));
         cenario.attachChild(geomParedeFinal);
 
-        Box teste = new Box(1, 06f, 1);
+        /*Box teste = new Box(1, 06f, 1);
         Geometry geomteste = new Geometry("Teste", teste);
         Material matteste = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         matteste.setColor("Color", ColorRGBA.Red);
         geomteste.setMaterial(matteste);
         geomteste.setLocalTranslation(0, 06f, 0);
         matteste.setTexture("ColorMap", assetManager.loadTexture("Textures/parede.jpg"));
-        shootables.attachChild(geomteste);
+        shootables.attachChild(geomteste);*/
 
         rootNode.attachChild(cenario);
         criaObstaculo();
         rootNode.attachChild(obstaculos);
+        //rootNode.attachChild(shootables);
 
     }
 
@@ -236,7 +246,7 @@ public class Main extends SimpleApplication {
     public void criaPorta(float posZ) {
 
         Box Porta = new Box(1f, 1f, 0.1f);
-        Geometry geomPortaDir1, geomPortaEsq1, geomPortaDir2, geomPortaEsq2;
+        Geometry geomPortaDir1, geomPortaEsq1, geomPortaDir2, geomPortaEsq2, geomPortaDir3, geomPortaEsq3;
         Material porta = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         porta.setTexture("ColorMap", assetManager.loadTexture("Textures/porta.jpg"));
 
@@ -261,6 +271,16 @@ public class Main extends SimpleApplication {
         portaNode.attachChild(geomPortaEsq2);
         rootNode.attachChild(portaNode);
         
+        geomPortaDir3 = new Geometry("Porta5", Porta);
+        geomPortaDir3.setMaterial(porta);
+        geomPortaDir3.setLocalTranslation(1f, 1, posZ-100);
+        portaNode.attachChild(geomPortaDir3);
+        
+        geomPortaEsq3 = new Geometry("Porta6", Porta);
+        geomPortaEsq3.setMaterial(porta);
+        geomPortaEsq3.setLocalTranslation(-1f, 1, posZ-100);
+        portaNode.attachChild(geomPortaEsq3);
+        rootNode.attachChild(portaNode);        
 
     }
 
@@ -268,6 +288,25 @@ public class Main extends SimpleApplication {
     public void simpleUpdate(float tpf) {
         //TODO: add update code
 
+        if(time+1000<System.currentTimeMillis())
+        {
+            if(cont!=0)
+            {
+                guiNode.detachChild(Texto);
+            }
+            time = System.currentTimeMillis();
+            cont ++;
+            guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+            Texto = new BitmapText(guiFont, false);
+            Texto.setSize(guiFont.getCharSet().getRenderedSize());  
+            Texto.setColor(ColorRGBA.White);
+            Texto.setText("TEMPO: " + cont);
+            Texto.setLocalTranslation( // center
+                settings.getWidth() / 2 - Texto.getLineWidth() / 2,
+                settings.getHeight() - 10 + Texto.getLineHeight() / 2, 0);
+            guiNode.attachChild(Texto);
+        }
+        
         //abre a porta com a posição da camera
         if (cam.getLocation().z >= 95 && cam.getLocation().z <= 96) {
             for (float i = 1; i < 2; i += 0.01) {
@@ -282,7 +321,16 @@ public class Main extends SimpleApplication {
                 portaNode.getChild("Porta4").setLocalTranslation((float) i * -1, 1, 73);
             }
         }
+        
+        if (cam.getLocation().z >= 0 && cam.getLocation().z <= 1){
+            for (float i = 1; i < 2; i += 0.01) {
+                portaNode.getChild("Porta5").setLocalTranslation((float) i, 1, -5);
+                portaNode.getChild("Porta6").setLocalTranslation((float) i * -1, 1, -5);
+            }
+        }
+       
     }
+        
 
     @Override
     public void simpleRender(RenderManager rm) {
@@ -322,6 +370,86 @@ public class Main extends SimpleApplication {
             //Texto2.removeFromParent();
             //cont = 0;
             //}
+            
+            if (name.equals("Walk") && !keyPressed) {
+                if(cam.getLocation().y<=1)
+                {
+                    cam.setLocation(new Vector3f(cam.getLocation().x,0.8f,cam.getLocation().z));
+                }
+                
+                if(cam.getLocation().x<=-0.5)
+                {
+                    cam.setLocation(new Vector3f(-1f,cam.getLocation().y,cam.getLocation().z));
+                }
+                
+                if(cam.getLocation().x>=0.5)
+                {
+                    cam.setLocation(new Vector3f(1f,cam.getLocation().y,cam.getLocation().z));
+                }
+                
+                cam.setLocation(new Vector3f(cam.getLocation().x,0.8f,cam.getLocation().z));
+    
+            }
+            
+            if (name.equals("Side_A") && !keyPressed) {
+                if(cam.getLocation().y<=1)
+                {
+                    cam.setLocation(new Vector3f(cam.getLocation().x,0.8f,cam.getLocation().z));
+                }
+                
+                if(cam.getLocation().x<=-1)
+                {
+                    cam.setLocation(new Vector3f(-1f,cam.getLocation().y,cam.getLocation().z));
+                }
+                
+                if(cam.getLocation().x>=1)
+                {
+                    cam.setLocation(new Vector3f(1f,cam.getLocation().y,cam.getLocation().z));
+                }
+    
+                cam.setLocation(new Vector3f(cam.getLocation().x,0.8f,cam.getLocation().z));
+                
+            }
+            
+            if (name.equals("Side_D") && !keyPressed) {
+                if(cam.getLocation().y<=1)
+                {
+                    cam.setLocation(new Vector3f(cam.getLocation().x,0.8f,cam.getLocation().z));
+                }
+                
+                if(cam.getLocation().x<=-1)
+                {
+                    cam.setLocation(new Vector3f(-1f,cam.getLocation().y,cam.getLocation().z));
+                }
+                
+                if(cam.getLocation().x>=1)
+                {
+                    cam.setLocation(new Vector3f(1f,cam.getLocation().y,cam.getLocation().z));
+                }
+                
+                cam.setLocation(new Vector3f(cam.getLocation().x,0.8f,cam.getLocation().z));
+    
+            }
+            
+            if (name.equals("Back") && !keyPressed) {
+                if(cam.getLocation().y<=1)
+                {
+                    cam.setLocation(new Vector3f(cam.getLocation().x,0.8f,cam.getLocation().z));
+                }
+                
+                if(cam.getLocation().x<=-1)
+                {
+                    cam.setLocation(new Vector3f(-1f,cam.getLocation().y,cam.getLocation().z));
+                }
+                
+                if(cam.getLocation().x>=1)
+                {
+                    cam.setLocation(new Vector3f(1f,cam.getLocation().y,cam.getLocation().z));
+                }
+                
+                cam.setLocation(new Vector3f(cam.getLocation().x,0.8f,cam.getLocation().z));
+    
+            }
 
             if (name.equals("Shoot") && !keyPressed) {
                 audio_gun.playInstance();
@@ -351,7 +479,7 @@ public class Main extends SimpleApplication {
                     mark.setLocalTranslation(closest.getContactPoint());
                     rootNode.attachChild(mark);
                     closest.getGeometry().removeFromParent();
-                    //cont++;
+                    cont2++;
                 } else {
                     // No hits? Then remove the red mark.
                     rootNode.detachChild(mark);
@@ -399,7 +527,7 @@ public class Main extends SimpleApplication {
     audio_nature = new AudioNode(assetManager, "Sounds/Background2.ogg", DataType.Stream);
     audio_nature.setLooping(true);  // activate continuous playing
     audio_nature.setPositional(true);
-    audio_nature.setVolume(3);
+    audio_nature.setVolume(5);
     rootNode.attachChild(audio_nature);
     audio_nature.play(); // play continuously!
   }
